@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import ProductPrice from "../../component/ProductPrice";

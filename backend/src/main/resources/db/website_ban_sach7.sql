@@ -6,6 +6,7 @@
 -- Generation Time: May 24, 2024 at 08:57 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.6
+USE websitebansach;
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -655,7 +656,7 @@ CREATE TABLE `tai_khoan` (
 --
 
 INSERT INTO `tai_khoan` (`id`, `email`, `gioi_tinh`, `password`, `role`, `username`) VALUES
-(1, 'mail@abc.com', 'Nam', 'c', 'admin', 'ab');
+(1, 'group12@gmail.com', 'Nam', 'group12', 'admin', 'group12_admin');
 
 --
 -- Indexes for dumped tables

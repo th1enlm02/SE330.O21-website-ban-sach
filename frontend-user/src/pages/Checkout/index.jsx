@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../../context/UserContext";
 import axios from "axios";
@@ -14,6 +15,7 @@ const Checkout = () => {
   // =================
   const [blocks, setBlocks] = useState();
   const [web3, setWeb3] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [accounts, setAccounts] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const destinationAccount = "0x3B7Dec9E79cdD568a60972EE615f92e0F2BBc4d0";

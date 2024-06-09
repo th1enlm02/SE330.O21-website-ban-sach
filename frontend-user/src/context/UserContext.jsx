@@ -3,6 +3,7 @@ const UserContext = React.createContext({ id:"", userName: "", auth: false });
 
 // @function  UserProvider
 // Create function to provide UserContext
+// eslint-disable-next-line react/prop-types
 const UserProvider = ({ children }) => {
   const [user, setUser] = React.useState(
     sessionStorage.getItem("user")
