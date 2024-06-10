@@ -1,9 +1,6 @@
-/* eslint-disable no-unused-vars */
-import React, { useState, useEffect, useContext } from "react";
-import { UserContext } from "../../context/UserContext";
-import axios from "axios";
-import { SHA256 } from "crypto-js";
-import Web3 from "web3";
+import { useState, useEffect, useContext } from 'react';
+import { UserContext } from '../../context/UserContext';
+import axios from 'axios';
 
 const Checkout = () => {
   const { user } = useContext(UserContext);
@@ -12,108 +9,6 @@ const Checkout = () => {
   const [cities, setCities] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
-  // =================
-  const [blocks, setBlocks] = useState();
-  const [web3, setWeb3] = useState(null);
-  // eslint-disable-next-line no-unused-vars
-  const [accounts, setAccounts] = useState([]);
-  const [selectedAccount, setSelectedAccount] = useState(null);
-  const destinationAccount = "0x3B7Dec9E79cdD568a60972EE615f92e0F2BBc4d0";
-
-  const connectGanache = async () => {
-    const ganacheUrl = "http://localhost:7545";
-    const web3 = new Web3(ganacheUrl);
-    const accounts = await web3.eth.getAccounts();
-    console.log(accounts);
-    setAccounts(accounts);
-  };
-
-  useEffect(() => {
-    connectGanache();
-  }, []);
-
-  useEffect(() => {
-    const initWeb3 = async () => {
-      if (window.ethereum) {
-        const web3 = new Web3(window.ethereum);
-        try {
-          await window.ethereum.enable();
-          setWeb3(web3);
-        } catch (err) {
-          console.error(err);
-        }
-      } else if (window.web3) {
-        const web3 = new Web3(window.web3.currentProvider);
-        setWeb3(web3);
-      } else {
-        console.error("No web3 detected");
-      }
-    };
-    initWeb3();
-  }, []);
-
-  useEffect(() => {
-    const getAccounts = async () => {
-      if (web3) {
-        const accounts = await web3.eth.getAccounts();
-        setAccounts(accounts);
-        setSelectedAccount(accounts[0]);
-      }
-    };
-    getAccounts();
-  }, [web3]);
-
-  const handleAccountChange = (e) => {
-    setSelectedAccount(e.target.value);
-  };
-
-  const calculateHash = (block) => {
-    const {
-      id,
-      token,
-      source,
-      destination,
-      previousHash,
-      blockSize,
-      version,
-      merkleRoot,
-      data,
-    } = block;
-    return SHA256(
-      id +
-      token +
-      source +
-      destination +
-      previousHash +
-      blockSize +
-      version +
-      merkleRoot +
-      JSON.stringify(data)
-    ).toString();
-  };
-
-  function createBlock(token) {
-    const previousHash =
-      "0000000000000000000000000000000000000000000000000000000000000000"; // Thay đổi nếu cần thiết
-
-    const block = {
-      id: Date.now(),
-      token,
-      source: selectedAccount,
-      destination: destinationAccount,
-      previousHash,
-      blockSize: Math.floor(Math.random() * 1000) + 1,
-      version: "1.0." + Math.floor(Math.random() * 10),
-      merkleRoot: Math.random().toString(16).substring(2, 66),
-      //   data: blockData,
-      data: "transaction",
-    };
-
-    block.hash = calculateHash(block);
-
-    return block;
-  }
-  //===================
 
   useEffect(() => {
     axios
@@ -121,8 +16,8 @@ const Checkout = () => {
       .then((res) => {
         console.log(res.data);
         if (res.data.length === 0) {
-          alert("Giỏ hàng trống");
-          window.location.href = "/";
+          alert('Giỏ hàng trống');
+          window.location.href = '/';
         }
         setCartItems(res.data);
         let total_price = 0;
@@ -133,19 +28,19 @@ const Checkout = () => {
         setTotalPrice(total_price);
       })
       .catch((error) => {
-        console.log("Error fetching data", error);
+        console.log('Error fetching data', error);
       });
   }, []);
 
   const [formData, setFormData] = useState({
-    email: "",
-    name: "",
-    phone: "",
-    address: "",
-    city: "",
-    district: "",
-    ward: "",
-    notes: "",
+    email: '',
+    name: '',
+    phone: '',
+    address: '',
+    city: '',
+    district: '',
+    ward: '',
+    notes: '',
     total_price: 0,
     orderItems: [],
   });
@@ -154,20 +49,18 @@ const Checkout = () => {
     setFormData({
       ...formData,
       email: user.email,
-      name: "",
-      phone: "",
+      name: '',
+      phone: '',
       orderItems: cartItems,
     });
 
     axios
-      .get(
-        "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json"
-      )
+      .get('https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json')
       .then((response) => {
         setCities(response.data);
       })
       .catch((error) => {
-        console.error("There was an error fetching the cities!", error);
+        console.error('There was an error fetching the cities!', error);
       });
   }, []);
 
@@ -175,31 +68,29 @@ const Checkout = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
-    if (name === "city") {
+    if (name === 'city') {
       const selectedCity = cities.find((city) => city.Id === value);
       setDistricts(selectedCity ? selectedCity.Districts : []);
       setWards([]);
-      setFormData({ ...formData, city: value, district: "", ward: "" });
+      setFormData({ ...formData, city: value, district: '', ward: '' });
     }
 
-    if (name === "district") {
-      const selectedDistrict = districts.find(
-        (district) => district.Id === value
-      );
+    if (name === 'district') {
+      const selectedDistrict = districts.find((district) => district.Id === value);
       setWards(selectedDistrict ? selectedDistrict.Wards : []);
-      setFormData({ ...formData, district: value, ward: "" });
+      setFormData({ ...formData, district: value, ward: '' });
     }
 
-    if (name === "ward") {
+    if (name === 'ward') {
       setFormData({ ...formData, ward: value });
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const selectedCity = cities.find((city) => city.Id === formData.city)?.Name || "";
-    const selectedDistrict = districts.find((district) => district.Id === formData.district)?.Name || "";
-    const selectedWard = wards.find((ward) => ward.Id === formData.ward)?.Name || "";
+    const selectedCity = cities.find((city) => city.Id === formData.city)?.Name || '';
+    const selectedDistrict = districts.find((district) => district.Id === formData.district)?.Name || '';
+    const selectedWard = wards.find((ward) => ward.Id === formData.ward)?.Name || '';
     const fullAddress = `${formData.address}, ${selectedWard}, ${selectedDistrict}, ${selectedCity}`;
 
     const orderData = {
@@ -209,61 +100,29 @@ const Checkout = () => {
       soDienThoai: formData.phone,
     };
 
-    //===========================
-    if (web3 && selectedAccount) {
-      const contractAddress = "0x742d35Cc6634C0532925a3b844Bc454e4438f44e";
-      const contractABI = [];
-      const contract = new web3.eth.Contract(contractABI, contractAddress);
-      const newBlock = createBlock(totalPrice / 96645076);
-      setBlocks(newBlock);
+    console.log(orderData);
 
-      try {
-        const tx = {
-          from: selectedAccount,
-          to: destinationAccount,
-          value: web3.utils.toWei(blocks.token.toString(), "ether"),
-          gas: 200000,
-          gasPrice: await web3.eth.getGasPrice(),
-        };
-        const result = await web3.eth.sendTransaction(tx);
-        console.log(result);
-        try {
-          axios
-            .post("http://localhost:8080/api/donhang/createdonhang", orderData)
-            .then((response) => {
-              console.log("Đặt hàng thành công:", response.data);
-              alert("Đặt hàng thành công");
-              window.location.href = "/";
-            })
-        } catch (error) {
-          console.error("Có lỗi xảy ra trong quá trình đặt hàng: ", error);
-        }
-      } catch (err) {
-        console.error(err);
-      }
+    try {
+      axios.post('http://localhost:8080/api/donhang/createdonhang', orderData).then((response) => {
+        console.log('Đặt hàng thành công:', response.data);
+        alert('Đặt hàng thành công');
+        window.location.href = '/';
+      });
+    } catch (error) {
+      console.error('Có lỗi xảy ra trong quá trình đặt hàng: ', error);
     }
   };
 
   return (
     <main className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 sm:pt-14 sm:pb-64 lg:max-w-7xl lg:px-8">
-      <h1 className="text-center text-3xl font-bold tracking-tight text-slate-900">
-        Đặt hàng
-      </h1>
+      <h1 className="text-center text-3xl font-bold tracking-tight text-slate-900">Đặt hàng</h1>
 
-      <form
-        onSubmit={handleSubmit}
-        className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16 mt-8"
-      >
+      <form onSubmit={handleSubmit} className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16 mt-8">
         <div>
           <div className="mb-10 border-b border-slate-200">
-            <h2 className="text-lg font-medium text-slate-900">
-              Thông tin giao hàng
-            </h2>
+            <h2 className="text-lg font-medium text-slate-900">Thông tin giao hàng</h2>
             <div className="mt-4">
-              <label
-                className="block text-sm font-medium text-slate-700"
-                htmlFor="contact-email"
-              >
+              <label className="block text-sm font-medium text-slate-700" htmlFor="contact-email">
                 Email
               </label>
               <div className="mt-1">
@@ -285,10 +144,7 @@ const Checkout = () => {
           <div>
             <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-x-4">
               <div className="sm:col-span-3">
-                <label
-                  className="block text-sm font-medium text-slate-700"
-                  htmlFor="shipping-name"
-                >
+                <label className="block text-sm font-medium text-slate-700" htmlFor="shipping-name">
                   Họ tên
                 </label>
                 <div className="mt-1">
@@ -306,10 +162,7 @@ const Checkout = () => {
               </div>
 
               <div className="sm:col-span-3">
-                <label
-                  className="block text-sm font-medium text-slate-700"
-                  htmlFor="shipping-phone"
-                >
+                <label className="block text-sm font-medium text-slate-700" htmlFor="shipping-phone">
                   Số điện thoại
                 </label>
                 <div className="mt-1">
@@ -328,10 +181,7 @@ const Checkout = () => {
               </div>
 
               <div className="sm:col-span-3">
-                <label
-                  className="block text-sm font-medium text-slate-700"
-                  htmlFor="shipping-address"
-                >
+                <label className="block text-sm font-medium text-slate-700" htmlFor="shipping-address">
                   Địa chỉ
                 </label>
                 <div className="mt-1">
@@ -349,10 +199,7 @@ const Checkout = () => {
               </div>
 
               <div>
-                <label
-                  className="block text-sm font-medium text-slate-700"
-                  htmlFor="shipping-city"
-                >
+                <label className="block text-sm font-medium text-slate-700" htmlFor="shipping-city">
                   Tỉnh thành
                 </label>
                 <div className="mt-1">
@@ -378,10 +225,7 @@ const Checkout = () => {
               </div>
 
               <div>
-                <label
-                  className="block text-sm font-medium text-slate-700"
-                  htmlFor="shipping-district"
-                >
+                <label className="block text-sm font-medium text-slate-700" htmlFor="shipping-district">
                   Quận huyện
                 </label>
                 <div className="mt-1">
@@ -406,10 +250,7 @@ const Checkout = () => {
               </div>
 
               <div>
-                <label
-                  className="block text-sm font-medium text-slate-700"
-                  htmlFor="shipping-ward"
-                >
+                <label className="block text-sm font-medium text-slate-700" htmlFor="shipping-ward">
                   Phường xã
                 </label>
                 <div className="mt-1">
@@ -423,7 +264,7 @@ const Checkout = () => {
                   >
                     <option value="" className="">
                       Chọn phường xã
-                    </option>{" "}
+                    </option>{' '}
                     {wards.map((ward) => (
                       <option key={ward.Id} value={ward.Id}>
                         {ward.Name}
@@ -434,10 +275,7 @@ const Checkout = () => {
               </div>
 
               <div className="sm:col-span-3">
-                <label
-                  className="block text-sm font-medium text-slate-700"
-                  htmlFor="notes"
-                >
+                <label className="block text-sm font-medium text-slate-700" htmlFor="notes">
                   Ghi chú
                 </label>
                 <div className="mt-1">
@@ -457,9 +295,7 @@ const Checkout = () => {
         </div>
 
         <div className="mt-10 lg:mt-0">
-          <h2 className="text-lg font-medium text-slate-900">
-            Đơn hàng của bạn
-          </h2>
+          <h2 className="text-lg font-medium text-slate-900">Đơn hàng của bạn</h2>
           <div className="mt-4 rounded-lg border border-slate-200">
             <h3 className="sr-only">Items in your cart</h3>
             <ul role="list" className="divide-y divide-slate-200">
@@ -469,10 +305,10 @@ const Checkout = () => {
                     <img
                       src={
                         product.sach.photoURL
-                          ? product.sach.photoURL.includes("/")
+                          ? product.sach.photoURL.includes('/')
                             ? product.sach.photoURL
                             : `http://localhost:8080/sach_image/${product.sach.photoURL}`
-                          : "https://bookstoreromanceday.org/wp-content/uploads/2020/08/book-cover-placeholder.png"
+                          : 'https://bookstoreromanceday.org/wp-content/uploads/2020/08/book-cover-placeholder.png'
                       }
                       alt={product.sach.tieuDe}
                       className="w-20 rounded-md"
@@ -489,15 +325,13 @@ const Checkout = () => {
                       </div>
                       <div className="ml-4 flex-shrink-0 flow-root">
                         <p className="text-sm font-medium text-slate-900">
-                          {product.sach.gia.toLocaleString()} VND x{" "}
-                          {product.soLuong}
+                          {product.sach.gia.toLocaleString()} VND x {product.soLuong}
                         </p>
                       </div>
                     </div>
                     <div className="flex flex-1 items-end justify-between pt-2">
                       <p className="mt-1 text-sm font-medium text-slate-900">
-                        {(product.sach.gia * product.soLuong).toLocaleString()}{" "}
-                        VND
+                        {(product.sach.gia * product.soLuong).toLocaleString()} VND
                       </p>
                     </div>
                   </div>
