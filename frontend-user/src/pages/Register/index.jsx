@@ -17,6 +17,12 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log(formData);
+
+    if (!formData.username.includes("@")) {
+      return alert("Tên người dùng không hợp lệ");
+    }
+
     try {
       const response = await axios.post(
         "http://localhost:8080/api/auth/register",

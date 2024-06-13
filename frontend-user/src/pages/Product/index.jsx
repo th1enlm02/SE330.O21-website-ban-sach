@@ -110,8 +110,8 @@ const ProductPage = () => {
                 <ProductPrice price={product.gia}></ProductPrice>
               </div>
             </div>
-            <div className="flex items-center space-x-3 mt-8">
-              <div>
+            <div className="flex space-x-3 mt-8 flex-col">
+              <div className="flex gap-4 items-center mb-4">
                 <input
                   className="border border-slate-300 rounded-md shadow-sm py-3 text-sm text-center sm:text-base show-spinners"
                   type="number"
@@ -129,6 +129,9 @@ const ProductPage = () => {
                     }
                   }}
                 />
+                <div>
+                  <span className="text-sm text-gray-500">Số lượng còn lại: {product.soLuong}</span>
+                </div>
               </div>
               <div className="flex w-full">
                 <button className="btn btn-primary btn-xl" onClick={addToCart}>

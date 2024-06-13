@@ -21,6 +21,10 @@ function LoginPage() {
     e.preventDefault();
     if (username && password) {
       console.log("Login with: ", username, password);
+      if (username.includes("@")) {
+        console.log("Tên người dùng không hợp lệ");
+        return;
+      }
       try {
         const response = await axios.post(
           "http://localhost:8080/api/auth/login",
