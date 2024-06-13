@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
+import Logo from '../../../public/book-store1.png';
+
 import DataTable from "../../components/DataTable";
 
 function Order() {
@@ -65,7 +69,71 @@ function Order() {
       className: "px-3 py-4 text-left text-sm tracking-wide text-slate-900 whitespace-nowrap",
       render: (item) => item.daThanhToan ? 'Đã thanh toán' : 'Chưa thanh toán',
     },
+    {
+      label: "Actions",
+      className: "pl-3 pr-4 py-4 text-left text-sm tracking-wide text-slate-900",
+      render: (item) => (
+        <button className="bg-green-100 px-4 py-2 rounded border-[1.5px] shadow-sm" onClick={() => handleExport(item.id)}>
+          Export
+        </button>
+
+      ),
+    },
   ];
+
+  const handleExport = async (id) => {
+      try {
+        const orderDetail = orders.find(order => order.id === id);
+        const ordersData = await fetch(`http://localhost:8080/api/chitietdonhang/getall/${id}`).then(response => response.json());
+        const totalPrice = ordersData.reduce((total, order) => total + order.gia, 0);
+        fetch(Logo)
+        .then(response => response.blob())
+        .then(blob => {
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = function() {
+                const base64data = reader.result;
+              
+                const docDefinition = {
+                  content: [
+                    {
+                      image: base64data,
+                      width: 200, // Adjust the width as needed
+                      alignment: 'center',
+                  },
+                    { text: `ID Đơn hàng: ${id}`, fontSize: 16, bold: true },
+                    { text: `Order ID: ${orderDetail.id}`, fontSize: 14, margin: [0, 10, 0, 5], bold: true },
+                    { text: `Ngày đặt: ${new Date(orderDetail.ngayDat).toLocaleDateString()}` },
+                    { text: `Tên người nhận: ${orderDetail.tenNguoiNhan}` },
+                    { text: `Số điện thoại: ${orderDetail.soDienThoai}` },
+                    { text: `Địa chỉ: ${orderDetail.diaChi}` },
+                    { text: 'Chi tiết đơn hàng', fontSize: 14, margin: [0, 10, 0, 5], bold: true},
+                    {
+                      table: {
+                        widths: ['auto', 'auto', 'auto'],
+                        body: [
+                          ['Tiêu đề', 'Số lượng', 'Giá'],
+                          ...ordersData.map(order => [
+                            order.sach.tieuDe,
+                            order.soLuong,
+                            order.gia.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
+                          ])
+                        ]
+                      }
+                    },
+                    { text: `Tổng giá: ${totalPrice.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}`, fontSize: 14, margin: [0, 10, 0, 5], bold: true}
+                  ],
+                };
+                // docDefinition.content.unshift(base64data);
+                pdfMake.createPdf(docDefinition).download(`Order_${id}.pdf`);
+            }
+        });
+
+        
+      } catch (error) {
+        console.error("Error exporting bill:", error);
+    }
+  };
 
   return (
     <div className="m-8">
